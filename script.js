@@ -1,29 +1,44 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const expandAllButton = document.getElementById('expandAll');
-    const collapseAllButton = document.getElementById('collapseAll');
-    
-    // Select all details elements. Use a class selector if you only want to target main chapters.
-    // Here, we select ALL details elements to open/close the whole structure.
+    const toggleAllButton = document.getElementById('toggleAll');
     const allDetails = document.querySelectorAll('details');
 
-    /**
-     * Toggles the 'open' attribute on all details elements.
-     * @param {boolean} shouldOpen - true to expand, false to collapse.
-     */
-    const toggleDetails = (shouldOpen) => {
-        allDetails.forEach(detail => {
-            detail.open = shouldOpen;
-        });
-    };
+    // Una variable de estado para rastrear si todas las secciones están expandidas
+    let areAllExpanded = false;
 
-    expandAllButton.addEventListener('click', () => {
-        toggleDetails(true);
+    // Establecer el estado inicial basado en qué está abierto al cargar la página.
+    // Por defecto, todo estará contraído, excepto el primer capítulo para un inicio limpio.
+    allDetails.forEach((detail, index) => {
+        // El primer capítulo principal está abierto por defecto en el HTML, así que respetamos eso.
+        if (!detail.open) {
+            areAllExpanded = false;
+        }
     });
 
-    collapseAllButton.addEventListener('click', () => {
-        // Collapse only the main chapter level for a cleaner default state,
-        // or toggleDetails(false) to collapse everything, including nested sections.
-        // Let's collapse everything for simplicity of "Collapse All"
-        toggleDetails(false);
+    // Verificamos el estado real al cargar la página.
+    const openDetails = document.querySelectorAll('details[open]').length;
+    if (openDetails === allDetails.length) {
+        areAllExpanded = true;
+        toggleAllButton.textContent = '➖ Contraer Todo';
+    } else {
+        areAllExpanded = false;
+        toggleAllButton.textContent = '➕ Expandir Todo';
+    }
+
+
+    toggleAllButton.addEventListener('click', () => {
+        // Cambiamos el estado: si estaban expandidos, los contraemos, y viceversa.
+        areAllExpanded = !areAllExpanded;
+
+        // Aplicamos el nuevo estado a todos los elementos <details>
+        allDetails.forEach(detail => {
+            detail.open = areAllExpanded;
+        });
+
+        // Actualizamos el texto del botón para reflejar el nuevo estado
+        if (areAllExpanded) {
+            toggleAllButton.textContent = '➖ Contraer Todo';
+        } else {
+            toggleAllButton.textContent = '➕ Expandir Todo';
+        }
     });
 });
